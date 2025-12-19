@@ -1,11 +1,6 @@
-"# Student-Performance-Indicator" 
-
-
-https://student-performance-indicator-3.onrender.com/
-
 # Student Performance Indicator
 
-🔗 **Live Demo:** https://student-performance-indicator-3.onrender.com/ :contentReference[oaicite:1]{index=1}
+🔗 **Live Demo:** https://student-performance-indicator-3.onrender.com/
 
 ---
 
