@@ -4,65 +4,171 @@
 
 ---
 
-## 📌 Project Overview
+# 🎓 Student Performance Indicator (End-to-End ML Project)
 
-The **Student Performance Indicator** is a machine learning‑driven web application that predicts a student’s academic performance based on their demographic, social, and educational attributes.
-
-The goal of this project is to help educators, parents, and students **identify potential performance outcomes**, enabling early interventions and support where needed.
-
-This system combines **data preprocessing**, **machine learning classification**, and a **user‑friendly web interface** to deliver accurate predictions in real time.
+This project predicts a student’s **Math Score** based on demographic and academic features using **Machine Learning regression models**.  
+It implements a **complete end-to-end ML pipeline**, including data ingestion, transformation, model training, evaluation, and deployment using **Flask**.
 
 ---
 
-## 🧠 What It Does
+## 📌 Problem Statement
 
-Given student inputs such as:
-* Gender  
-* Ethnicity  
-* Parental level of education  
-* Lunch type  
-* Test preparation course completion  
-* Math score  
-* Reading score  
-* Writing score  
+Student academic performance is influenced by multiple social and educational factors.  
+This project aims to **predict the Math Score** of a student using features such as:
 
-The app predicts whether the **student will perform well academically**.
+- Gender
+- Race/Ethnicity
+- Parental level of education
+- Lunch type
+- Test preparation course
+- Reading score
+- Writing score
 
-Users interact with the system through the web UI by entering their features and receiving a performance prediction instantly.
+This is a **supervised regression problem**.
+
+---
+
+## 🧠 Solution Overview
+
+The solution follows **production-level ML architecture**:
+
+1. Data Ingestion
+2. Data Transformation
+3. Model Training & Hyperparameter Tuning
+4. Model Evaluation
+5. Model Persistence
+6. Prediction Pipeline
+7. Flask Web Application
 
 ---
 
-## 📁 Project File Structure & Purpose
+## 📊 Dataset Information
 
-| File / Folder | Purpose |
-|---------------|---------|
-| **`app.py`** | Entry point for the web application. Loads the trained model and preprocessing pipeline, takes user input from the web form, and displays predictions. |
-| **`requirements.txt`** | Lists all Python packages required to run the project locally (Flask, scikit-learn, pandas, etc.). |
-| **`setup.py`** | Optional script for installing the project as a package. Helps manage dependencies and project setup. |
-| **`artifacts/`** | Contains serialized model files (e.g., `.pkl` or `.joblib`) and preprocessing objects needed to make predictions. |
-| **`catboost_info/`** | Metadata folder generated if CatBoost is used; contains training info, tree structure, and model logs. |
-| **`notebook/data/`** | Contains the datasets used for training/testing and performing exploratory data analysis (EDA). |
-| **`src/`** | Source code folder containing helper modules: |
-| `src/data.py` | Handles data loading and preprocessing functions. |
-| `src/model.py` | Contains code to train, evaluate, and save machine learning models. |
-| `src/pipeline.py` | Builds the end-to-end pipeline: preprocessing + model prediction. |
-| **`templates/`** | HTML templates for the Flask web app, providing the user interface. |
-| **`README.md`** | Documentation for the project: explains purpose, usage, results, and file structure. |
-
-> **Notes:**  
-> - `artifacts/` and `catboost_info/` are automatically generated after model training.  
-> - The `src/` folder is modular, so new preprocessing steps or models can easily be added.  
-> - `templates/` allows UI customization without modifying Python code.
+- **Source**: Kaggle – Students Performance in Exams
+- **Target Variable**: `math_score`
+- **Features**:
+  - Categorical: gender, race_ethnicity, parental_level_of_education, lunch, test_preparation_course
+  - Numerical: reading_score, writing_score
 
 ---
-## 🛠 Technologies Used
 
-* **Python** – Primary development language  
-* **Flask** – Backend API and web framework  
-* **scikit‑learn / CatBoost / Other ML libs** – Machine learning modeling  
-* **HTML/CSS** – Frontend UI  
-* **Joblib or Pickle** – Model serialization  
-* **CSV Files** – Input dataset format
+## 🧹 Data Ingestion
+
+- Reads raw dataset from:   notebook/data/stud.csv
+- Splits data into:
+- 80% Training set
+- 20% Test set
+- Saves artifacts: artifacts/data.csv, artifacts/train.csv, artifacts/test.csv
+
+---
+
+## 🔄 Data Transformation
+
+Implemented using **Scikit-learn Pipelines & ColumnTransformer**.
+
+### Numerical Features
+- Median Imputation
+- Standard Scaling
+
+### Categorical Features
+- Most-frequent Imputation
+- One-Hot Encoding
+- Standard Scaling (`with_mean=False`)
+
+### Saved Artifact:-  artifacts/preprocessor.pkl
+
+---
+
+## 🤖 Model Training & Selection
+
+Multiple regression models are trained and evaluated using **GridSearchCV**:
+
+- Linear Regression
+- Decision Tree Regressor
+- Random Forest Regressor
+- Gradient Boosting Regressor
+- AdaBoost Regressor
+- XGBoost Regressor
+- CatBoost Regressor
+
+### Evaluation Metric
+- **R² Score**
+
+The best-performing model (based on test R²) is:
+- Automatically selected
+- Saved as:-  artifacts/model.pkl
+
+
+---
+
+## 📈 Model Evaluation
+
+- Models are evaluated on both training and test datasets
+- Overfitting is controlled via:
+  - Cross-validation
+  - Hyperparameter tuning
+- If the best model score is below **0.6**, training fails safely
+
+---
+
+## 🔮 Prediction Pipeline
+
+During inference:
+
+1. User inputs data via the Flask UI
+2. Inputs are converted into a Pandas DataFrame
+3. Preprocessing is applied using saved `preprocessor.pkl`
+4. Trained model predicts the **Math Score**
+
+---
+
+## 🌐 Flask Web Application
+
+The Flask app provides a clean UI for prediction.
+
+### App Capabilities
+- Collects user inputs via HTML forms
+- Executes preprocessing + prediction pipeline
+- Displays predicted Math Score
+
+### Routes
+- `/` → Landing page
+- `/predictdata` → Prediction form and output
+
+---
+
+
+---
+
+## 🧾 Logging & Exception Handling
+
+- Centralized logging system with timestamped log files
+- Custom exception handling with:
+  - File name
+  - Line number
+  - Error message
+- Improves debuggability and production readiness
+
+---
+
+## 🛠️ Tech Stack
+
+- **Programming**: Python
+- **ML**: Scikit-learn, XGBoost, CatBoost
+- **Data**: Pandas, NumPy
+- **Deployment**: Flask
+- **Utilities**: GridSearchCV, Pickle
+- **Version Control**: Git, GitHub
+
+---
+
+## 🚀 Future Enhancements
+
+- Add MAE and RMSE metrics
+- Introduce SHAP-based explainability
+- Dockerize the application
+- Add CI/CD pipeline
+- Deploy on AWS / GCP / Render
 
 
 
