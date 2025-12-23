@@ -160,17 +160,6 @@ The Flask app provides a clean UI for prediction.
 - **Utilities**: GridSearchCV, Pickle
 - **Version Control**: Git, GitHub
 
----
-
-## 🚀 Future Enhancements
-
-- Add MAE and RMSE metrics
-- Introduce SHAP-based explainability
-- Dockerize the application
-- Add CI/CD pipeline
-- Deploy on AWS / GCP / Render
-
-
 
 
 
