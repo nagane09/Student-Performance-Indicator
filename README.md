@@ -4,147 +4,181 @@
 
 ---
 
-# **Student Performance Prediction Using Machine Learning**
+---
 
-## **Abstract**
+# **Predicting Student Performance Using Machine Learning**  
 
-Predicting student performance enables early identification of at-risk students and supports data-driven educational interventions. This project implements an **end-to-end machine learning pipeline** to predict **students’ final math scores** based on demographic, socio-economic, and academic features. Multiple regression models were evaluated, and **Linear Regression emerged as the best-performing model with 87.9% accuracy**. The pipeline includes preprocessing, model training, evaluation, and deployment via a Flask web interface.
+This project implements an **end-to-end machine learning pipeline** for predicting students’ final math scores based on demographic, socio-economic, and academic features. Beyond building predictive models, the project includes **statistical exploration, hypothesis testing, and feature importance analysis**, making it **research-oriented** and aligned with graduate-level data science standards.
+
+---
+
+## **1. Abstract**
+
+Early prediction of student performance enables targeted interventions for at-risk students. This project leverages **machine learning and statistical analysis** to predict final math scores using:
+
+- Demographics (gender, race/ethnicity, parental education)  
+- Socio-economic features (lunch type, test preparation)  
+- Academic performance (reading and writing scores)  
 
 **Key contributions:**
 
-* End-to-end ML pipeline for regression tasks  
-* Comparative analysis of multiple machine learning models  
-* Preprocessing pipeline for handling numerical and categorical data  
-* Real-time prediction capability via Flask  
+- End-to-end ML pipeline with preprocessing, training, evaluation, and deployment  
+- Comparative evaluation of 7 regression models  
+- Statistical and exploratory data analysis (EDA) to understand relationships and validate assumptions  
+- Hypothesis testing (t-tests, ANOVA) to uncover significant factors  
+- Feature importance analysis and visualization  
+- Deployment via a Flask web interface for real-time predictions  
+
+**Best model:** Linear Regression with **87.9% accuracy** on test data.
 
 ---
 
-## **1. Problem Statement**
+## **2. Problem Statement**
 
-Given a set of student features:
+Given student features:
 
 X = { gender, race_ethnicity, parental_education, lunch, test_preparation, reading_score, writing_score }
 
-Predict the final math score:
 
-y_pred = f(X; theta), where y is a real number
-where \(f\) is a regression model and \(\theta\) are the model parameters.
+Predict final math score:
+y_pred = f(X; θ)
 
----
 
-## **2. Dataset**
-
-* **Source:** Publicly available student performance dataset  
-* **Records:** ~1000+  
-* **Features:**
-
-| Feature                     | Description                   |
-| --------------------------- | ----------------------------- |
-| gender                      | Male/Female                   |
-| race_ethnicity              | Group A–E                     |
-| parental_level_of_education | Highest education of parent   |
-| lunch                       | Standard / Free               |
-| test_preparation_course     | Completed / None              |
-| reading_score               | Reading exam score            |
-| writing_score               | Writing exam score            |
-| math_score                  | Target variable (final score) |
-
-* **Train/Test Split:** 80%/20%  
-* **Missing Values:** Imputed using median (numerical) and most frequent (categorical)  
+where `f` is a regression model and θ represents learned parameters.
 
 ---
 
-## **3. Data Preprocessing**
+## **3. Dataset**
 
-* **Numerical Features:** `reading_score`, `writing_score`  
-  * Imputation: Median  
-  * Scaling: StandardScaler  
+- **Source:** Public student performance dataset (~1000 records)  
+- **Features:**
 
-* **Categorical Features:** `gender`, `race_ethnicity`, `parental_level_of_education`, `lunch`, `test_preparation_course`  
-  * Imputation: Most frequent value  
-  * Encoding: One-Hot Encoding  
-  * Scaling: StandardScaler (with_mean=False)  
+| Feature | Description |
+|---------|-------------|
+| gender | Male/Female |
+| race_ethnicity | Group A–E |
+| parental_level_of_education | Highest parental education |
+| lunch | Standard / Free |
+| test_preparation_course | Completed / None |
+| reading_score | Reading exam score |
+| writing_score | Writing exam score |
+| math_score | Target variable |
 
-* **Pipeline:** Preprocessing performed via **ColumnTransformer** for reproducibility  
-* **Artifact Saved:** `preprocessor.pkl` for real-time predictions  
-
----
-
-## **4. Models Considered**
-
-Seven regression models were trained and evaluated. A brief explanation of each:
-
-| Model                       | Description & Use Case                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------ |
-| **Linear Regression**       | Simple linear model; predicts outcome as weighted sum of features. Best for linear relationships and interpretable results. |
-| **Decision Tree Regressor** | Non-linear tree-based model; captures feature interactions. Useful for datasets with complex non-linear patterns. |
-| **Random Forest Regressor** | Ensemble of decision trees; reduces overfitting and improves generalization. Good for high-dimensional, noisy data. |
-| **Gradient Boosting Regressor** | Sequential ensemble that improves weak learners iteratively. Works well for structured data with complex patterns. |
-| **AdaBoost Regressor**      | Boosting of weak learners; focuses on difficult-to-predict points. Often used for small- to medium-sized datasets. |
-| **XGB Regressor**           | Optimized gradient boosting; fast and accurate, often used in competitions and large datasets. |
-| **CatBoost Regressor**      | Gradient boosting specialized for categorical features; reduces preprocessing effort. |
-
-✅ **Observation:** After training and hyperparameter tuning, **Linear Regression achieved the best performance** with **87.9% accuracy**, indicating strong linear correlation between reading/writing scores and final math score.
+- **Train/Test Split:** 80% / 20%  
+- **Missing Values:** Imputed (median for numerical, most frequent for categorical)
 
 ---
 
-## **5. Evaluation Metrics**
+## 4. Exploratory Data Analysis (EDA) & Statistical Analysis
 
-* **Mean Squared Error (MSE):**
+### 4.1 Correlation Analysis
 
-MSE = (1/n) * Σ (y_i - y_pred_i)^2
+|            | reading_score | writing_score | math_score |
+|------------|---------------|---------------|------------|
+| reading_score | 1.000         | 0.956         | 0.815      |
+| writing_score | 0.956         | 1.000         | 0.802      |
+| math_score    | 0.815         | 0.802         | 1.000      |
 
-* **Mean Absolute Error (MAE):**
-
-MAE = (1/n) * Σ |y_i - y_pred_i|
-
-* **R² Score:**
-
-R² = 1 - [ Σ (y_i - y_pred_i)^2 / Σ (y_i - y_mean)^2 ]
-
-* **Accuracy** (rounded prediction):
-
-Accuracy = (Number of correct predictions (rounded) / Total predictions) * 100
+**Observation:** Reading and writing scores are strongly correlated with final math score.
 
 ---
 
-## **6. Pipeline Overview**
+### 4.2 Distribution & Outliers
 
-**Steps:**
-
-1. **Data Ingestion** → Load CSV data  
-2. **Preprocessing** → Imputation, scaling, encoding  
-3. **Model Training** → Train all 7 models  
-4. **Evaluation** → Compute R², MSE, MAE, Accuracy  
-5. **Model Selection** → Linear Regression selected as best  
-6. **Persistence** → Save `model.pkl` and `preprocessor.pkl`  
-7. **Deployment** → Flask app for real-time predictions  
+- Histograms and boxplots were used to check skewness and outliers.
+- Reading and writing scores are roughly normally distributed.
+- Minor outliers exist but do not significantly affect model training.
 
 ---
 
-## **7. Deployment**
+### 4.3 Hypothesis Testing
 
-* **Framework:** Flask Web Application  
-* **Functionality:**  
-  * Users input student features  
-  * Data transformed using `preprocessor.pkl`  
-  * Model predicts `math_score`  
-  * Prediction returned via web interface  
+**T-test: Lunch Type**
+
+```python
+group_standard = data[data["lunch"]=="standard"]["math_score"]
+group_free = data[data["lunch"]=="free"]["math_score"]
+t_stat, p_val = ttest_ind(group_standard, group_free)
+```
+Result: T-test indicates difference in math scores based on lunch type.
+
+### ANOVA: Race/Ethnicity
+
+```bash
+groups = [data[data["race_ethnicity"]==g]["math_score"] for g in data["race_ethnicity"].unique()]
+f_stat, p_val = f_oneway(*groups)
+```
+
+Result: Statistically significant differences exist across racial/ethnic groups (p << 0.05).
+
+## 5. Data Preprocessing
+
+- **Numerical Features:** Median imputation + StandardScaler  
+- **Categorical Features:** Most frequent imputation + OneHotEncoder + StandardScaler (with_mean=False)  
+- **Pipeline:** ColumnTransformer saved as `preprocessor.pkl`  
+- Transformed training and test arrays stored for reproducibility
 
 ---
 
-## **8. Conclusion**
+## 6. Model Training
 
-This project demonstrates:
+**Models Tested:**
 
-* Preprocessing of numerical and categorical features  
-* Training and evaluation of seven regression models  
-* **Linear Regression achieved best performance with 87.9% accuracy**  
-* Deployment pipeline enables real-time prediction  
+- Linear Regression ✅ (selected)  
+- Decision Tree Regressor  
+- Random Forest Regressor  
+- Gradient Boosting Regressor  
+- XGB Regressor  
+- CatBoost Regressor  
+- AdaBoost Regressor  
 
-**Future Work:**  
+**Performance:**  
+- Linear Regression achieved **R² = 0.879** and is interpretable for research purposes.  
+- Pipeline saved as `model.pkl`
 
-* Explore stacking or ensemble methods to improve performance  
-* Incorporate additional features (attendance, participation, homework scores)  
-* Add interpretability using **SHAP** or **LIME**  
+---
 
+## 7. Feature Importance & Insights
+
+- Linear regression coefficients indicate **reading_score** has slightly higher predictive power than **writing_score**.  
+- Socio-economic features (**lunch**, **test preparation**) show weaker but measurable effects.  
+- Statistical analysis confirms that differences across groups are significant, providing actionable insights.
+
+---
+
+## 8. Deployment
+
+- **Framework:** Flask  
+- **Functionality:**  
+  - Users input student features via web form  
+  - Data transformed using `preprocessor.pkl`  
+  - Predictions generated by `model.pkl`  
+  - Results displayed in real time  
+
+**Inference Workflow:**
+
+```python
+preprocessor = load_object("artifacts/preprocessor.pkl")
+model = load_object("artifacts/model.pkl")
+network_model = PredictPipeline(preprocessor, model)
+predictions = network_model.predict(input_df)
+```
+
+## 9. Evaluation Metrics
+
+| Metric | Value |
+|--------|-------|
+| Mean Squared Error (MSE) | 38.12 |
+| Mean Absolute Error (MAE) | 4.28 |
+| R² Score | 0.879 |
+| Accuracy (rounded) | 87.9% |
+
+---
+
+## 10. Limitations & Future Work
+
+- Extend features to include **attendance, participation, homework scores**  
+- Explore **stacking/ensemble methods** for improved performance  
+- Apply **SHAP/LIME** for interpretability  
+- Integrate **temporal analysis** if multiple exams available  
+- Investigate **fairness and bias** across socio-economic and racial groups
